@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 70" role="img" aria-label="Visa">
+  <rect width="180" height="70" rx="20" fill="#fff"/>
+  <path d="M21 18h25L32 52H17L9 24h15l3 17 9-23Zm31 0h15L57 52H42l10-34Zm19 22c0-14 22-14 31-9l-4 10c-7-4-14-4-14 0 0 5 18 3 18 16 0 14-23 17-35 9l5-10c7 5 15 5 15 1 0-5-16-3-16-17Zm47-22h17l12 34h-14l-2-6h-15l-3 6H98l20-34Zm5 18h7l-2-9-5 9Z" fill="#17357a"/>
+  <rect x="9" y="55" width="138" height="4" rx="2" fill="#f6a500"/>
+</svg>
