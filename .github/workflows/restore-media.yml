@@ -1,0 +1,108 @@
+name: Restore verified media
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/restore-media.yml
+      - scripts/restore-media.py
+      - data/media-manifest.json
+      - .github/migration/source-files.json
+      - scripts/restore-source.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  statuses: write
+
+concurrency:
+  group: segeda-media-restore-main
+  cancel-in-progress: false
+
+jobs:
+  restore:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Report restoration started
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+            -f state=pending -f context=segeda/media-restore \
+            -f description='Verifying and restoring 751 original media files' \
+            -f target_url="$RUN_URL" > /dev/null
+
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Restore large source files
+        run: python3 scripts/restore-source.py
+
+      - name: Restore and verify every media file
+        run: python3 scripts/restore-media.py
+
+      - name: Commit verified media and receipt
+        id: publish
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          receipt = json.loads(Path('data/media-verification.json').read_text())
+          if receipt['status'] != 'success' or receipt['count'] != 751 or len(receipt['files']) != 751:
+              raise SystemExit('A complete verification receipt is required before committing.')
+          if receipt['run_id'] != os.environ['GITHUB_RUN_ID'] or receipt['source_commit'] != os.environ['GITHUB_SHA']:
+              raise SystemExit('The verification receipt must belong to this workflow run.')
+          source_files = json.loads(Path('.github/migration/source-files.json').read_text())['files']
+          verified_files = receipt['files'] + source_files
+          paths = [item['path'] for item in verified_files] + ['data/media-verification.json']
+          subprocess.run(['git', '-c', 'core.autocrlf=false', 'add', '--', *paths], check=True)
+          staged = subprocess.check_output(['git', 'ls-files', '--stage', '-z', '--', *paths]).decode().split('\0')
+          blobs = {entry.split('\t', 1)[1]: entry.split(' ', 2)[1] for entry in staged if entry}
+          if any(blobs.get(item['path']) != item['git_blob_sha'] for item in verified_files):
+              raise SystemExit('Staged media differs from the verification receipt.')
+          changed_paths = subprocess.check_output(['git', 'diff', '--cached', '--name-only', '-z']).decode().split('\0')
+          if set(filter(None, changed_paths)) - set(paths):
+              raise SystemExit('Unexpected staged changes; only media and its receipt may be committed.')
+          changed = subprocess.run(['git', 'diff', '--cached', '--quiet']).returncode
+          if changed not in (0, 1):
+              raise SystemExit('Unable to inspect staged media.')
+          if changed:
+              subprocess.run(['git', 'config', 'user.name', 'github-actions[bot]'], check=True)
+              subprocess.run(['git', 'config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com'], check=True)
+              subprocess.run(['git', 'commit', '-m', 'Restore 751 verified migration media files'], check=True)
+              subprocess.run(['git', 'push', 'origin', 'HEAD:refs/heads/main'], check=True)
+          commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write(f'commit={commit}\n')
+          PY
+
+      - name: Report restoration result
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          JOB_STATUS: ${{ job.status }}
+          MEDIA_COMMIT: ${{ steps.publish.outputs.commit }}
+        run: |
+          state=failure
+          description='Media restoration failed; inspect the workflow run'
+          if [ "$JOB_STATUS" = success ]; then
+            state=success
+            description='All 751 media files verified and committed with a receipt'
+          fi
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" \
+            -f state="$state" -f context=segeda/media-restore \
+            -f description="$description" -f target_url="$RUN_URL" > /dev/null
+          if [ "$state" = success ] && [ -n "$MEDIA_COMMIT" ] && [ "$MEDIA_COMMIT" != "$GITHUB_SHA" ]; then
+            gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$MEDIA_COMMIT" \
+              -f state=success -f context=segeda/media-restore \
+              -f description="$description" -f target_url="$RUN_URL" > /dev/null
+          fi

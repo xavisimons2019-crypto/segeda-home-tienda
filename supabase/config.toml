@@ -1,0 +1,4 @@
+project_id = "segeda-home-tienda"
+
+[functions.segeda-checkout]
+verify_jwt = true
