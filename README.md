@@ -1,5 +1,7 @@
 # Segeda Home Tienda
 
+> **Carga del código pendiente.** La transferencia se interrumpió porque el entorno de trabajo se desconectó. Por ahora, la rama `main` contiene esta guía; todavía no constituye una copia ejecutable del proyecto. La copia completa se conserva en el respaldo privado de Supabase y en los ZIP de la entrega.
+
 Tienda con catálogo, categorías, personalización, carrito, pedidos por WhatsApp y panel de administración.
 
 ## Estado de la migración — 15 de septiembre de 2026
@@ -9,7 +11,7 @@ Tienda con catálogo, categorías, personalización, carrito, pedidos por WhatsA
 - Copiados: 683 productos, 15 categorías y 751 imágenes/recursos gráficos. Al comenzar la migración no había pedidos ni cambios administrativos en la base anterior.
 - El acceso administrativo utiliza Supabase Auth y permisos asociados al identificador del administrador. Los datos privados están protegidos con RLS.
 - El código puede generar una web estática independiente con `build:portable`. Esa versión usa Supabase directamente y no requiere ChatGPT, D1 ni R2.
-- GitHub: repositorio privado [xavisimons2019-crypto/segeda-home-tienda](https://github.com/xavisimons2019-crypto/segeda-home-tienda). Contiene el código y los recursos de esta migración.
+- GitHub: repositorio privado [xavisimons2019-crypto/segeda-home-tienda](https://github.com/xavisimons2019-crypto/segeda-home-tienda). La incorporación del código y los recursos está pendiente de completar la transferencia.
 - Alojamiento externo: pendiente de conectar una cuenta del propietario y publicar. La dirección actual de ChatGPT Sites sigue dependiendo de esta cuenta hasta ese último paso.
 
 ## Publicar sin ChatGPT
@@ -42,7 +44,7 @@ En **Respaldo y acceso**:
 
 La cuenta de Supabase, la de GitHub, el alojamiento y el registrador del dominio deben quedar bajo control del propietario. Conservar este ZIP permite recuperar el código, pero no sustituye una copia periódica de pedidos nuevos.
 
-GitHub conserva el código; los cambios de productos, imágenes y pedidos realizados desde el panel se guardan en Supabase. No se copian automáticamente a GitHub. Para descargar el código actual desde GitHub, abre **Code → Download ZIP**; para guardar los datos actuales, usa **Respaldo y acceso** en el panel.
+Cuando termine la carga, GitHub conservará el código; los cambios de productos, imágenes y pedidos realizados desde el panel se guardan en Supabase y no se copian automáticamente a GitHub. Por ahora, descarga el proyecto desde **Respaldo y acceso → Descargar proyecto** en el [panel publicado](https://segeda-home-tienda-recreada.lollix36.chatgpt.site/admin). **Code → Download ZIP** de este repositorio aún no incluye la aplicación.
 
 ## Recuperar en otro proyecto de Supabase
 
@@ -50,7 +52,8 @@ GitHub conserva el código; los cambios de productos, imágenes y pedidos realiz
 2. Ejecutar `scripts/restore-supabase.mjs` desde un equipo privado con las variables indicadas dentro del script. La clave de servicio solo se usa en ese equipo.
 3. Desplegar `supabase/functions/segeda-checkout` con sus archivos compartidos. Mantener la verificación JWT activada.
 4. Sustituir URL y claves públicas en `data/supabase-public.json`; reconstruir la web.
-5. Verificar acceso y permisos antes de atender pedidos. La cuenta administrativa se vuelve a crear: los respaldos no contienen sesiones ni contraseñas.
+5. Subir una copia actual del código en ZIP al bucket privado `segeda-backups`, con el nombre `segeda-proyecto.zip`, para habilitar **Descargar proyecto** en el panel restaurado.
+6. Verificar acceso y permisos antes de atender pedidos. La cuenta administrativa se vuelve a crear: los respaldos no contienen sesiones ni contraseñas.
 
 El JSON `data/catalog-supabase-backup.json` y `public/` conservan el catálogo y los archivos de esta migración. Para pedidos posteriores usa el respaldo descargado desde el panel.
 
