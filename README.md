@@ -11,7 +11,7 @@ Tienda con catálogo, categorías, personalización, carrito, pedidos por WhatsA
 - El código puede generar una web estática independiente con `build:portable`. Esa versión usa Supabase directamente y no requiere ChatGPT, D1 ni R2.
 - GitHub: repositorio privado [xavisimons2019-crypto/segeda-home-tienda](https://github.com/xavisimons2019-crypto/segeda-home-tienda). Contiene el código y los recursos de esta migración.
 - Transferencia a GitHub completada y verificada. La [ejecución de recuperación](https://github.com/xavisimons2019-crypto/segeda-home-tienda/actions/runs/35037566368) incorporó las 751 imágenes y los archivos grandes a `main`. Sus huellas coinciden con los originales; el comprobante está en `data/media-verification.json`. Ya se puede descargar el proyecto completo desde **Code → Download ZIP**.
-- Alojamiento externo: pendiente de conectar una cuenta del propietario y publicar. La dirección actual de ChatGPT Sites sigue dependiendo de esta cuenta hasta ese último paso.
+- Alojamiento externo: Cloudflare Pages confirmó la publicación en [segeda-home-tienda.pages.dev](https://segeda-home-tienda.pages.dev). Panel: [segeda-home-tienda.pages.dev/admin](https://segeda-home-tienda.pages.dev/admin). Esta versión utiliza GitHub y Supabase y no requiere la cuenta de ChatGPT para ejecutarse. La confirmación de publicación proviene del panel de Cloudflare; queda pendiente comprobar el inicio de sesión y un pedido desde esta nueva dirección.
 
 ## Publicar sin ChatGPT
 
