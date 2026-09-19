@@ -4,5 +4,5 @@ function measure(){const doc=frame.contentDocument;const cards=[...doc.querySele
 function scrollCards(index=0){const card=frame.contentDocument.querySelectorAll('.model-card')[index];if(card){frame.contentWindow.scrollTo({top:card.getBoundingClientRect().top+frame.contentWindow.scrollY-90,behavior:'instant'});}measure();}
 for(const b of document.querySelectorAll('[data-width]'))b.onclick=()=>{frame.style.width=b.dataset.width+'px';for(const item of document.querySelectorAll('[data-width]'))item.setAttribute('aria-pressed',String(item===b));requestAnimationFrame(()=>scrollCards(8));};
 document.getElementById('cards').onclick=()=>scrollCards();document.getElementById('reference').onclick=()=>scrollCards(8);document.getElementById('measure').onclick=measure;
-frame.onload=()=>{frame.contentDocument.fonts.ready.then(()=>scrollCards(8));};
+frame.onload=()=>{const style=frame.contentDocument.createElement('style');style.textContent='html{scrollbar-width:none}html::-webkit-scrollbar{display:none}';frame.contentDocument.head.appendChild(style);frame.contentDocument.fonts.ready.then(()=>scrollCards(8));};
 </script></html>
