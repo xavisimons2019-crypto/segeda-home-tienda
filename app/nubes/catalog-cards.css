@@ -1,0 +1,139 @@
+/* Photo-first Nubes catalog. Scoped to cards; full product previews stay intact. */
+.nubes-models .model-grid {
+  gap: 18px;
+  align-items: stretch;
+}
+
+.nubes-models .model-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0 0 12px;
+  border-radius: 20px;
+  overflow: hidden;
+  text-align: left;
+}
+
+.nubes-models .model-image {
+  position: relative;
+  display: block;
+  flex: none;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / .94;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  overflow: hidden;
+}
+
+.nubes-models .model-image > .safe-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border-radius: 0;
+}
+
+.nubes-models .model-image > .safe-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 0;
+  transform: none;
+}
+
+.nubes-models .model-image i {
+  right: 9px;
+  bottom: 9px;
+  padding: 6px 11px;
+  border: 1px solid #ffffff38;
+  border-radius: 999px;
+  background: var(--rose);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.5;
+  box-shadow: 0 2px 8px #51474118;
+}
+
+.nubes-models .model-card > small {
+  margin: 10px 12px 0;
+  min-height: 2.6em;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: .01em;
+  overflow-wrap: anywhere;
+  color: var(--rose);
+}
+
+.nubes-models .model-card > strong {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 2.5em;
+  margin: 5px 12px 7px;
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -.015em;
+  overflow-wrap: anywhere;
+}
+
+.nubes-models .model-card > span:last-child {
+  margin: auto 12px 0;
+  padding: 0;
+  border: 0;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.nubes-models .model-card > span:last-child b {
+  display: inline;
+  font-size: 1.08em;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .nubes-models .model-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-inline: -4px;
+  }
+
+  .nubes-models .model-card {
+    padding: 0 0 10px;
+    border-radius: 19px;
+  }
+
+  .nubes-models .model-card > small {
+    margin: 8px 10px 0;
+    font-size: 9px;
+  }
+
+  .nubes-models .model-card > strong {
+    margin: 4px 10px 6px;
+    font-size: 14px;
+  }
+
+  .nubes-models .model-card > span:last-child {
+    margin: auto 10px 0;
+    font-size: 10.5px;
+    line-height: 1.5;
+  }
+
+  .nubes-models .model-image i {
+    right: 8px;
+    bottom: 8px;
+    padding: 5px 10px;
+    font-size: 10.5px;
+  }
+}
