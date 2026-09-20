@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import {getCatalog} from "@/lib/supabase";
+import {watchCatalog} from "@/lib/supabase";
 import {ShoppingBag} from "lucide-react";
 import ProductImage from "@/app/product-image";
 import CatalogCard from "@/app/catalog-card";
@@ -14,7 +14,7 @@ const initialModels=christmas.products.map((product,index)=>({...product,id:Stri
 
 export default function NavidadClient(){
   const [models,setModels]=useState(initialModels);
-  useEffect(()=>{getCatalog().then(data=>setModels(data.products.filter(p=>p.category==="navidad-temporadas").map((p,index)=>({id:String(p.id),title:p.title,description:p.description||"",imageUrl:p.imageUrl,index:index+1})))).catch(()=>{});},[]);
+  useEffect(()=>watchCatalog(data=>setModels(data.products.filter(p=>p.category==="navidad-temporadas").map((p,index)=>({id:String(p.id),title:p.title,description:p.description||"",imageUrl:p.imageUrl,index:index+1})))),[]);
   const [quantities,setQuantities]=useState<Record<string,number>>({});
   const [surname,setSurname]=useState("");
   const [notice,setNotice]=useState("");

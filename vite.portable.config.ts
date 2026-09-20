@@ -5,5 +5,5 @@ import {fileURLToPath,URL} from 'node:url';
 export default defineConfig({
   plugins:[react()],
   resolve:{alias:{'@':fileURLToPath(new URL('.',import.meta.url))}},
-  build:{outDir:'dist-portable',emptyOutDir:true},
+  build:{rollupOptions:{input:{main:'index.html',orderLab:'order-lab.html'}},outDir:'dist-portable',emptyOutDir:true},
 });

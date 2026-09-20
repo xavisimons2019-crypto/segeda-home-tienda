@@ -22,12 +22,12 @@ const deliverySources=[
   ["https://segeda-nubes-tematicas.mad-elynnlevon7.chatgpt.site/entrega-real-09.png","Diseño personalizado","Cada nombre y temática se prepara con cuidado.",""],
   ["https://segeda-nubes-tematicas.mad-elynnlevon7.chatgpt.site/entrega-real-10.png","Entrega confirmada","Pedido terminado y entregado directamente.",""],
 ];
-import {getCatalog} from '@/lib/supabase';
+import {watchCatalog} from '@/lib/supabase';
 
 const themeNames:Record<string,string>={animalitos:"Animalitos","personajes-aventuras":"Personajes y aventuras","princesas-fantasia":"Princesas y fantasía",dinosaurios:"Dinosaurios","bebe-delicados":"Bebé y delicados",otros:"Ocasiones y otros"};
 
 export default function NubesClient(){
-  const initial=useMemo(()=>baseProducts.filter((product)=>product.category==="nubes").sort((a,b)=>Number(a.id)-Number(b.id)),[]);
+  const initial=useMemo(()=>baseProducts.filter((product)=>product.category==="nubes"),[]);
   const [products,setProducts]=useState<Product[]>(initial);
   const [selected,setSelected]=useState<Product>(initial[0]);
   const [audience,setAudience]=useState("all");
@@ -41,7 +41,7 @@ export default function NubesClient(){
   const [stars,setStars]=useState(false);
   const [notice,setNotice]=useState("");
 
-  useEffect(()=>{getCatalog().then((data)=>{const next=(data.products||[]).filter((product)=>product.category==="nubes").sort((a,b)=>Number(a.id)-Number(b.id));if(next.length){setProducts(next);setSelected((current)=>next.find((product)=>String(product.id)===String(current?.id))||next[0])}}).catch(()=>{})},[]);
+  useEffect(()=>watchCatalog((data)=>{const next=data.products.filter((product)=>product.category==="nubes");setProducts(next);setSelected((current)=>next.find((product)=>String(product.id)===String(current?.id))||next[0]||null);}),[]);
   const filtered=useMemo(()=>{const search=query.trim().toLowerCase();return products.filter((product)=>(audience==="all"||product.audience===audience)&&(theme==="all"||product.themeGroup===theme)&&(!search||`${product.title} ${product.tags||""} ${product.themeGroup||""}`.toLowerCase().includes(search)))},[products,audience,theme,query]);
   const previewList=filtered.length?filtered:products;
   const selectedIndex=Math.max(0,previewList.findIndex((product)=>String(product.id)===String(selected?.id)));
