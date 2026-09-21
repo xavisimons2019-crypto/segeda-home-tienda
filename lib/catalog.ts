@@ -3,8 +3,8 @@ import raw from "@/data/catalog.json";
 import assetMapRaw from "@/data/asset-map.json";
 
 export type SizeOption = { label: string; price: number };
-export type Product = { id:number|string; title:string; category:string; sortOrder?:number; description?:string; price:number; compareAtPrice?:number; sizes?:SizeOption[]; tags?:string; audience?:string; themeGroup?:string; estimatedDays?:string; featured?:boolean; imageUrl:string; galleryUrls?:string[] };
-export type Category = { id:string; name:string; short:string; image:string; description:string; defaultPrice:number; featured:boolean; count:number };
+export type Product = { id:number|string; title:string; category:string; sortOrder?:number; description?:string; measurement?:string; material?:string; price:number; compareAtPrice?:number; sizes?:SizeOption[]; tags?:string; audience?:string; themeGroup?:string; estimatedDays?:string; featured?:boolean; imageUrl:string; galleryUrls?:string[] };
+export type Category = { id:string; sortOrder?:number; name:string; short:string; image:string; description:string; defaultPrice:number; featured:boolean; count:number };
 export const SOURCE_ORIGIN = "https://segeda-home-tienda.mad-elynnlevon7.chatgpt.site";
 export const baseCategories = raw.categories as Category[];
 export const baseProducts = raw.products as Product[];

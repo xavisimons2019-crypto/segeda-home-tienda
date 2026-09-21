@@ -37,6 +37,7 @@ export function readCart():CartItem[]{
         title,
         category,
         description:String(rawProduct.description||""),
+        measurement:String(rawProduct.measurement||""),material:String(rawProduct.material||""),
         price:Math.max(0,Number(rawProduct.price)||unitPrice),
         compareAtPrice:Math.max(0,Number(rawProduct.compareAtPrice)||0),
         sizes:Array.isArray(rawProduct.sizes)?rawProduct.sizes as Product["sizes"]:[],

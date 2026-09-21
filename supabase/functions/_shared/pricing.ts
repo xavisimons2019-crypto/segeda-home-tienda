@@ -5,7 +5,7 @@ const clean=(value:unknown,max:number)=>String(value??'').trim().slice(0,max);
 
 export function priceOrder(body:Body, products:Product[]){
   const customerName=clean(body.customerName,150),customerPhone=clean(body.customerPhone,30),customerCity=clean(body.customerCity,150);
-  if(!customerName||!customerCity||!/^[+\d ()-]{6,30}$/.test(customerPhone))throw new Error('Completa tu nombre, WhatsApp y ciudad de entrega.');
+  if(customerPhone&&!/^[+\d ()-]{6,30}$/.test(customerPhone))throw new Error('Revisa tu WhatsApp o deja el campo vacío para coordinarlo después.');
   if(!Array.isArray(body.items)||!body.items.length||body.items.length>50)throw new Error('El carrito no es válido.');
   const byId=new Map(products.map(p=>[String(p.id),p]));
   const valid=body.items.map(item=>{
@@ -26,7 +26,7 @@ export function priceOrder(body:Body, products:Product[]){
       const size=product.sizes.find(s=>s.label===requestedSize);
       if(!size)throw new Error(`Selecciona una medida válida para ${product.title}.`);
       unitPrice=Number(size.price);
-    }else sizeLabel='Estándar';
+    }else sizeLabel=clean(product.measurement,150)||'Estándar';
     if(product.category==='nubes'&&notes.includes('80 stickers de estrellas'))unitPrice+=25;
     if(!Number.isFinite(unitPrice)||unitPrice<0)throw new Error('Este producto necesita confirmación de precio.');
     return {key:clean(item.key,300),product,sizeLabel,unitPrice,personalization:clean(item.personalization,500),color:clean(item.color,200),notes,quantity};

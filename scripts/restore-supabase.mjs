@@ -18,7 +18,7 @@ if(bucketError&&!bucketError.message.toLowerCase().includes('already'))throw buc
 const prefix=`${url}/storage/v1/object/public/segeda-media/`;
 function rewrite(value){if(Array.isArray(value))return value.map(rewrite);if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value).map(([k,v])=>[k,rewrite(v)]));return typeof value==='string'?value.replace(/^https:\/\/[^/]+\/storage\/v1\/object\/public\/segeda-media\//,prefix):value;}
 for(const [table,records] of [['segeda_categories',data.categories],['segeda_products',data.products]]){
- for(let i=0;i<records.length;i+=80){const rows=records.slice(i,i+80).map((row,j)=>({id:String(row.id),data:rewrite(row),sort_order:table==='segeda_products'?(row.sortOrder||0):i+j,...(table==='segeda_products'?{category:row.category}:{})}));const {error}=await db.from(table).insert(rows);if(error)throw error;}
+ for(let i=0;i<records.length;i+=80){const rows=records.slice(i,i+80).map((row,j)=>({id:String(row.id),data:rewrite(row),sort_order:row.sortOrder||(table==='segeda_products'?0:i+j+1),...(table==='segeda_products'?{category:row.category}:{})}));const {error}=await db.from(table).insert(rows);if(error)throw error;}
  console.log(`${table}: ${records.length}`);
 }
 const mime={'.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml','.avif':'image/avif','.gif':'image/gif'};

@@ -20,10 +20,10 @@ export async function getCatalog(): Promise<{products: Product[]; categories: Ca
   };
   const [products, categories] = await Promise.all([
     readProducts(),
-    supabase.from('segeda_categories').select('data').order('sort_order').order('id').limit(1000),
+    supabase.from('segeda_categories').select('data,sort_order').order('sort_order').order('id').limit(1000),
   ]);
   if(categories.error) throw new Error('No se pudo actualizar el catálogo.');
-  return {products, categories: categories.data.map(row=>row.data as Category)};
+  return {products, categories: categories.data.map(row=>({...row.data as Category,sortOrder:row.sort_order as number}))};
 }
 
 /** A transaction updates the entire category, with stale-list detection in Postgres. */
@@ -43,6 +43,13 @@ export async function saveProductOrder(category: string, ids: string[], expected
     : 'No se pudo confirmar el nuevo orden. Se restauró la lista anterior; actualízala antes de reintentar.');
 }
 
+export async function saveCategoryOrder(ids:string[],expectedIds:string[]):Promise<void>{
+  const {error}=await supabase.rpc('segeda_reorder_categories',{p_ids:ids,p_expected_ids:expectedIds});
+  if(!error)return;
+  try{const catalog=await getCatalog();if(sameProductOrder(catalog.categories.map(c=>c.id),ids))return;}catch{}
+  throw new Error(error.code==='40001'?'Las categorías cambiaron en otra sesión. Actualiza la lista.':'No se pudo confirmar el orden. Se restauró la lista anterior; actualízala para continuar.');
+}
+
 /** Update open storefronts after a commit, and refresh on return/reconnection. */
 export function watchCatalog(onChange: (catalog: Awaited<ReturnType<typeof getCatalog>>) => void) {
   let closed = false, running = false, queued = false;
@@ -57,6 +64,7 @@ export function watchCatalog(onChange: (catalog: Awaited<ReturnType<typeof getCa
   const schedule = () => { clearTimeout(timer); timer = setTimeout(() => void refresh(), 180); };
   const channel = supabase.channel(`catalog-order-${crypto.randomUUID()}`)
     .on('postgres_changes', {event:'*', schema:'public', table:'segeda_products'}, schedule)
+    .on('postgres_changes', {event:'*', schema:'public', table:'segeda_categories'}, schedule)
     .subscribe(status => { if (status === 'SUBSCRIBED') schedule(); });
   const fallback = setInterval(() => void refresh(), 30000);
   window.addEventListener('focus', schedule);
