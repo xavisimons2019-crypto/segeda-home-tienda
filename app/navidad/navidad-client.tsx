@@ -10,11 +10,12 @@ import {scrollToSection} from "@/lib/motion";
 import { christmas, type Product } from "@/lib/catalog";
 import { readCart, saveCart, type CartItem } from "@/lib/cart";
 
+type ChristmasModel={id:string;title:string;description:string;imageUrl:string;index:number;measurement?:string;material?:string};
 const initialModels=christmas.products.map((product,index)=>({...product,id:String(9001+index),index:index+1}));
 
 export default function NavidadClient(){
-  const [models,setModels]=useState(initialModels);
-  useEffect(()=>watchCatalog(data=>setModels(data.products.filter(p=>p.category==="navidad-temporadas").map((p,index)=>({id:String(p.id),title:p.title,description:p.description||"",imageUrl:p.imageUrl,index:index+1})))),[]);
+  const [models,setModels]=useState<ChristmasModel[]>(initialModels);
+  useEffect(()=>watchCatalog(data=>setModels(data.products.filter(p=>p.category==="navidad-temporadas").map((p,index)=>({id:String(p.id),title:p.title,description:p.description||"",imageUrl:p.imageUrl,measurement:p.measurement,material:p.material,index:index+1})))),[]);
   const [quantities,setQuantities]=useState<Record<string,number>>({});
   const [surname,setSurname]=useState("");
   const [notice,setNotice]=useState("");
@@ -26,7 +27,7 @@ export default function NavidadClient(){
   const description=useMemo(()=>models.map((model)=>quantities[model.id]?`${model.title} × ${quantities[model.id]}`:"").filter(Boolean).join(" + "),[quantities]);
 
   useEffect(()=>{queueMicrotask(()=>{const items=readCart().filter((item)=>item.product.category==="navidad-temporadas");const next:Record<string,number>={};let savedSurname="";for(const item of items){const index=String(item.product.id);next[index]=(next[index]||0)+item.quantity;if(item.personalization&&item.personalization!=="Apellido por confirmar")savedSurname=item.personalization}if(savedSurname)setSurname(savedSurname);surnameRef.current=savedSurname;quantitiesRef.current=next;setQuantities(next)})},[]);
-  const sync=(next:Record<string,number>,family=surnameRef.current)=>{const quantity=Object.values(next).reduce((sum,value)=>sum+value,0);const price=quantity>=2?christmas.multipleUnitPrice:christmas.singlePrice;const other=readCart().filter((item)=>item.product.category!=="navidad-temporadas");const navidad:CartItem[]=models.flatMap((model)=>{const amount=next[model.id]||0;if(!amount)return [];const product:Product={id:model.id,title:model.title,category:"navidad-temporadas",description:model.description,price,compareAtPrice:christmas.regularPrice,sizes:[],tags:"navidad letrero familia preventa",audience:"unisex",themeGroup:"navidad",estimatedDays:christmas.estimatedDays,featured:true,imageUrl:model.imageUrl,galleryUrls:[model.imageUrl]};return [{key:`navidad-${model.index}-${family||"pendiente"}`,product,sizeLabel:"Preventa Navideña",unitPrice:price,personalization:family||"Apellido por confirmar",color:"",notes:"Reserva con 50%",quantity:amount}]});saveCart([...other,...navidad])};
+  const sync=(next:Record<string,number>,family=surnameRef.current)=>{const quantity=Object.values(next).reduce((sum,value)=>sum+value,0);const price=quantity>=2?christmas.multipleUnitPrice:christmas.singlePrice;const other=readCart().filter((item)=>item.product.category!=="navidad-temporadas");const navidad:CartItem[]=models.flatMap((model)=>{const amount=next[model.id]||0;if(!amount)return [];const product:Product={id:model.id,title:model.title,category:"navidad-temporadas",description:model.description,measurement:model.measurement,material:model.material,price,compareAtPrice:christmas.regularPrice,sizes:[],tags:"navidad letrero familia preventa",audience:"unisex",themeGroup:"navidad",estimatedDays:christmas.estimatedDays,featured:true,imageUrl:model.imageUrl,galleryUrls:[model.imageUrl]};return [{key:`navidad-${model.index}-${family||"pendiente"}`,product,sizeLabel:"Preventa Navideña",unitPrice:price,personalization:family||"Apellido por confirmar",color:"",notes:"Reserva con 50%",quantity:amount}]});saveCart([...other,...navidad])};
   const change=(index:string,delta:number)=>{const next={...quantitiesRef.current,[index]:Math.max(0,(quantitiesRef.current[index]||0)+delta)};if(!next[index])delete next[index];quantitiesRef.current=next;setQuantities(next);sync(next);setNotice(delta>0?"Modelo agregado al carrito":"Se quitó un modelo");setTimeout(()=>setNotice(""),1500)};
   const updateSurname=(value:string)=>{surnameRef.current=value;setSurname(value);sync(quantitiesRef.current,value)};
   const checkout=()=>{if(!count){scrollToSection("modelos-navidad");setNotice("Elige al menos un modelo navideño");setTimeout(()=>setNotice(""),2200);return}sync(quantities);location.assign("/catalogo?carrito=1")};
