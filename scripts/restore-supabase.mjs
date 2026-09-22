@@ -12,6 +12,9 @@ const db=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false
 const {count,error:check}=await db.from('segeda_products').select('id',{count:'exact',head:true});
 if(check)throw check;if(count)throw new Error('El proyecto contiene productos. Use un proyecto vacío para evitar sobrescrituras.');
 const data=JSON.parse(await readFile(process.env.SEGEDA_BACKUP_JSON||'data/catalog-supabase-backup.json','utf8'));
+// Orders and journals must be empty too; never overwrite operating records.
+for(const table of ['segeda_orders','segeda_finance_transactions','segeda_finance_bills']){const {count,error}=await db.from(table).select('id',{count:'exact',head:true});if(error)throw error;if(count)throw new Error(`El proyecto contiene registros en ${table}. Use un proyecto vacío.`);}
+
 const images=process.env.SEGEDA_IMAGES_DIR||'public';
 const {error:bucketError}=await db.storage.createBucket('segeda-media',{public:true,fileSizeLimit:8000000});
 if(bucketError&&!bucketError.message.toLowerCase().includes('already'))throw bucketError;
@@ -25,6 +28,11 @@ const mime={'.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':
 async function upload(folder){for(const entry of await readdir(folder,{withFileTypes:true})){const path=join(folder,entry.name);if(entry.isDirectory())await upload(path);else if(mime[extname(path).toLowerCase()]){const {error}=await db.storage.from('segeda-media').upload(relative(images,path).replaceAll('\\','/'),await readFile(path),{contentType:mime[extname(path).toLowerCase()],upsert:false});if(error)throw error;}}}
 await upload(images);
 if(data.orders?.length){for(let i=0;i<data.orders.length;i+=50){const {error}=await db.from('segeda_orders').insert(rewrite(data.orders.slice(i,i+50)));if(error)throw error;}}
+// v1 exports remain compatible. Restore private finance tables in foreign-key order.
+if(data.finance){
+ const tables=['segeda_finance_sections','segeda_finance_bills','segeda_finance_transactions','segeda_finance_allocations','segeda_finance_budgets','segeda_finance_cost_plans','segeda_finance_order_terms'];
+ for(const table of tables){const rows=data.finance[table]||[];for(let i=0;i<rows.length;i+=50){const batch=rows.slice(i,i+50);const {error}=table==='segeda_finance_sections'?await db.from(table).upsert(batch,{onConflict:'id'}):await db.from(table).insert(batch);if(error)throw error;}console.log(`${table}: ${rows.length}`);}
+}
 const {data:created,error}=await db.auth.admin.createUser({email,password,email_confirm:true});if(error)throw error;
 const {error:membership}=await db.from('segeda_admins').insert({user_id:created.user.id});if(membership)throw membership;
 await db.storage.createBucket('segeda-backups',{public:false,fileSizeLimit:52428800});
