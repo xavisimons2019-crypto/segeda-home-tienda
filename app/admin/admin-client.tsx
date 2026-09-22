@@ -17,6 +17,8 @@ import ProductImage from '@/app/product-image';
 import {getCatalog,isAdmin,supabase,uploadProductImage,saveProductOrder,saveCategoryOrder} from '@/lib/supabase';
 import {downloadBlob,downloadFullBackup,downloadSource,exportData} from '@/lib/backup';
 
+import './admin-navigation.css';
+
 const emptyProduct:Product={id:'',title:'',category:'nubes',description:'',price:80,compareAtPrice:0,sizes:[],tags:'',audience:'',themeGroup:'',estimatedDays:'3 a 5 días hábiles',featured:false,imageUrl:'',galleryUrls:[]};
 const OrdersFinance=lazy(()=>import('./orders-finance'));
 
