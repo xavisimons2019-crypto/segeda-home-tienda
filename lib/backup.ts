@@ -9,18 +9,21 @@ export function downloadBlob(blob:Blob,name:string){
 
 export async function exportData(){
   const catalog=await getCatalog();
-  const orders:unknown[]=[];
-  for(let offset=0;;offset+=500){
-    const {data,error}=await supabase.from('segeda_orders').select('*').order('created_at').order('id').range(offset,offset+499);
-    if(error)throw new Error('No se pudieron exportar los pedidos.');
-    orders.push(...data);if(data.length<500)break;
-  }
-  return {format:'segeda-backup-v1',exportedAt:new Date().toISOString(),...catalog,orders};
+  const {data,error}=await supabase.rpc('segeda_finance_export');
+  if(error||!data)throw new Error('No se pudieron exportar los pedidos y las finanzas. Revisa tu sesión.');
+  return {format:'segeda-backup-v2',exportedAt:new Date().toISOString(),...catalog,orders:data.orders,finance:data.finance};
+}
+
+/** Private snapshot from the initial migration. Current source is kept in GitHub. */
+export async function downloadSource(){
+ const {data,error}=await supabase.storage.from('segeda-backups').download('segeda-proyecto.zip');
+ if(error||!data)throw new Error('No se pudo descargar la copia inicial. Puedes obtener el código actualizado desde GitHub.');
+ downloadBlob(data,'Segeda-proyecto-inicial.zip');
 }
 
 
 export async function downloadFullBackup(progress:(message:string)=>void){
-  progress('Preparando catálogo y pedidos…');
+  progress('Preparando catálogo, pedidos y finanzas…');
   const data=await exportData();
   const files=[{name:'datos-segeda.json',bytes:new TextEncoder().encode(JSON.stringify(data,null,2))}];
   const paths=new Set(manifest.map(file=>file.path));
@@ -44,10 +47,4 @@ export async function downloadFullBackup(progress:(message:string)=>void){
   }));
   progress('Preparando el archivo ZIP…');
   downloadBlob(makeZip(files),`Segeda-datos-e-imagenes-${new Date().toISOString().slice(0,10)}.zip`);
-}
-
-export async function downloadSource(){
-  const {data,error}=await supabase.storage.from('segeda-backups').download('segeda-proyecto.zip');
-  if(error||!data)throw new Error('No se pudo descargar el código. Inténtalo nuevamente.');
-  downloadBlob(data,'Segeda-proyecto.zip');
 }
