@@ -1,0 +1,186 @@
+/* Shared tactile controls. Keep catalog data, click handlers and admin styling intact. */
+:is(
+  .category-rail a, .nubes-category-mirror a, .catalog-back-row .catalog-back,
+  .primary-link, .button-secondary, .all-categories,
+  .nubes-header > button, .nubes-whatsapp, .nubes-closing > a,
+  .models-summary button, .empty-search button, .theme-filters button,
+  .christmas-header button, .christmas-summary button,
+  .header-actions [data-slot=button], .whatsapp-float,
+  .catalog-card .catalog-card__choose, .nubes-floating i,
+  :where(main:not(.admin-shell):not(.admin-login), .product-dialog, .cart-sheet)
+    [data-slot=button]:is([data-variant=default], [data-variant=outline])
+) {
+  --control-top: #fffefa;
+  --control-bottom: #f3e9df;
+  --control-edge: #dbc7b6;
+  --control-depth: #d4bdac;
+  --control-ink: #68554b;
+  --control-glow: #ffffffd9;
+  --control-shadow: #61483c18;
+  border: 1px solid var(--control-edge);
+  border-radius: 999px;
+  background: radial-gradient(ellipse at 35% 0%, #ffffff0d, transparent 68%),
+    linear-gradient(180deg, var(--control-top), var(--control-bottom));
+  color: var(--control-ink);
+  box-shadow: inset 0 1px 0 var(--control-glow), inset 0 -1px 0 #00000008,
+    0 3px 0 var(--control-depth), 0 7px 16px var(--control-shadow);
+  font-weight: 500;
+  text-shadow: none;
+  transition: transform 180ms ease, box-shadow 180ms ease,
+    border-color 180ms ease, color 180ms ease, filter 180ms ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Rose enamel: actions and the currently open collection. */
+:is(
+  .primary-link, .nubes-header > button, .nubes-whatsapp, .nubes-closing > a,
+  .christmas-header .christmas-cart, .christmas-summary button,
+  .catalog-card .catalog-card__choose, .nubes-floating i,
+  .category-rail a.active, .category-rail a[aria-current=page],
+  .theme-filters button.active,
+  :where(main:not(.admin-shell):not(.admin-login), .product-dialog, .cart-sheet)
+    [data-slot=button][data-variant=default]
+) {
+  --control-top: #a04d60;
+  --control-bottom: #934356;
+  --control-edge: #ab6070;
+  --control-depth: #733748;
+  --control-ink: #fffdf9;
+  --control-glow: #f4bfc780;
+  --control-shadow: #8b42542b;
+}
+
+/* A sage accent connects WhatsApp with the brand's existing palette. */
+.whatsapp-float {
+  --control-top: #647457;
+  --control-bottom: #4d5d43;
+  --control-edge: #738164;
+  --control-depth: #35452e;
+  --control-ink: #fffdf9;
+  --control-glow: #ced8ba66;
+  --control-shadow: #3f513832;
+}
+
+.category-rail a, .nubes-category-mirror a {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 10px 17px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.category-rail a.active, .category-rail a[aria-current=page] { font-weight: 600; }
+.category-rail, .nubes-category-mirror { padding-block: 15px 18px; }
+.catalog-back-row .catalog-back { min-height: 42px; padding-inline: 15px; }
+.header-actions [data-slot=button] { min-width: 44px; min-height: 44px; }
+.all-categories { padding: 10px 20px; min-height: 44px; }
+.catalog-card .catalog-card__choose { font-weight: 600; }
+.theme-filters { padding-block: 4px 9px; }
+.theme-filters button { min-height: 42px; }
+.nubes-floating i { font-style: normal; }
+
+/* Selection controls stay quieter than the main action. */
+:is(.audience-selector button, .size-grid button, .detail-copy fieldset button,
+  .dialog-addon, .nubes-addon, .custom-theme-cta) {
+  box-shadow: inset 0 1px 0 #ffffffb3, 0 2px 0 #e3d6c8, 0 4px 10px #61483c08;
+  transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+}
+:is(.audience-selector button.active, .size-grid button.active,
+  .detail-copy fieldset button.selected, .dialog-addon.active, .nubes-addon.active) {
+  border-color: #b77280;
+  background: linear-gradient(180deg, #fcf1ee, #f5e4df);
+  box-shadow: inset 0 1px 3px #a7586518, 0 0 0 1px #e5c6c8;
+}
+
+/* Hover only for pointers: touch devices get a clear, momentary press instead. */
+@media (hover: hover) and (pointer: fine) {
+  :is(
+    .category-rail a, .nubes-category-mirror a, .catalog-back-row .catalog-back,
+    .primary-link, .button-secondary, .all-categories,
+    .nubes-header > button, .nubes-whatsapp, .nubes-closing > a,
+    .models-summary button, .empty-search button, .theme-filters button,
+    .christmas-header button, .christmas-summary button,
+    .header-actions [data-slot=button], .whatsapp-float,
+    :where(main:not(.admin-shell):not(.admin-login), .product-dialog, .cart-sheet)
+      [data-slot=button]:is([data-variant=default], [data-variant=outline])
+  ):hover:not(:disabled):not([aria-disabled=true]) {
+    transform: translateY(-2px);
+    background: radial-gradient(ellipse at 35% 0%, #ffffff0d, transparent 68%),
+      linear-gradient(180deg, var(--control-top), var(--control-bottom));
+    color: var(--control-ink);
+    border-color: var(--control-edge);
+    box-shadow: inset 0 1px 0 var(--control-glow), inset 0 -1px 0 #00000008,
+      0 5px 0 var(--control-depth), 0 11px 22px var(--control-shadow);
+    filter: brightness(1.035);
+  }
+  :is(.catalog-card:hover .catalog-card__choose, .nubes-floating:hover i) {
+    transform: translateY(-2px);
+    box-shadow: inset 0 1px 0 var(--control-glow), 0 5px 0 var(--control-depth),
+      0 9px 16px var(--control-shadow);
+  }
+  .catalog-back:hover svg { transform: translateX(-2px); }
+}
+.catalog-back svg { transition: transform 180ms ease; }
+
+:is(
+  .category-rail a, .nubes-category-mirror a, .catalog-back-row .catalog-back,
+  .primary-link, .button-secondary, .all-categories,
+  .nubes-header > button, .nubes-whatsapp, .nubes-closing > a,
+  .models-summary button, .empty-search button, .theme-filters button,
+  .christmas-header button, .christmas-summary button,
+  .header-actions [data-slot=button], .whatsapp-float,
+  :where(main:not(.admin-shell):not(.admin-login), .product-dialog, .cart-sheet)
+    [data-slot=button]:is([data-variant=default], [data-variant=outline])
+):active:not(:disabled):not([aria-disabled=true]),
+.catalog-card:active .catalog-card__choose,
+.nubes-floating:active i {
+  transform: translateY(2px);
+  scale: 1;
+  box-shadow: inset 0 2px 4px #00000012, inset 0 1px 0 var(--control-glow),
+    0 1px 0 var(--control-depth), 0 3px 7px var(--control-shadow);
+  filter: none;
+}
+
+:is(
+  .category-rail a, .nubes-category-mirror a, .catalog-back-row .catalog-back,
+  .primary-link, .button-secondary, .all-categories, .nubes-header > button,
+  .nubes-whatsapp, .nubes-closing > a, .models-summary button, .empty-search button,
+  .theme-filters button, .christmas-header button, .christmas-summary button,
+  .header-actions [data-slot=button], .whatsapp-float,
+  :where(main:not(.admin-shell):not(.admin-login), .product-dialog, .cart-sheet)
+    [data-slot=button]:is([data-variant=default], [data-variant=outline])
+):focus-visible {
+  outline: 2px solid #835633;
+  outline-offset: 5px;
+}
+:where(main:not(.admin-shell):not(.admin-login), .product-dialog, .cart-sheet)
+  [data-slot=button]:is(:disabled, [aria-disabled=true]) {
+  transform: none;
+  scale: 1;
+  filter: none;
+  box-shadow: inset 0 1px 0 #ffffff50;
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 700px) {
+  .category-rail a, .nubes-category-mirror a { font-size: 12px; padding-inline: 14px; }
+  .catalog-back-row .catalog-back { min-height: 42px; }
+  .catalog-card .catalog-card__choose { right: 9px; bottom: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(
+    .category-rail a, .nubes-category-mirror a, .catalog-back-row .catalog-back,
+    .primary-link, .button-secondary, .all-categories,
+    .nubes-header > button, .nubes-whatsapp, .nubes-closing > a,
+    .models-summary button, .empty-search button, .theme-filters button,
+    .christmas-header button, .christmas-summary button,
+    .header-actions [data-slot=button], .whatsapp-float,
+    .catalog-card .catalog-card__choose, .nubes-floating i,
+    :where(main:not(.admin-shell):not(.admin-login), .product-dialog, .cart-sheet)
+      [data-slot=button]:is([data-variant=default], [data-variant=outline])
+  ), .catalog-back svg { transition: none; transform: none !important; }
+}

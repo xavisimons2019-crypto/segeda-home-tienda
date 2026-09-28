@@ -8,6 +8,7 @@ import StoreMotion from '@/app/store-motion';
 import '@/app/globals.css';
 import '@/app/premium.css';
 import '@/app/catalog-cards.css';
+import '@/app/storefront-controls.css';
 
 const route=window.location.pathname.replace(/\/$/,'')||'/';
 const Page=route==='/admin'?Admin:route==='/nubes'?Nubes:route==='/navidad'?Navidad:Catalog;
