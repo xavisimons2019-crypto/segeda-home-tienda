@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Segeda Home · Revisión de botones</title><style>
+*{box-sizing:border-box}body{margin:0;background:#ede8e1;color:#514741;font:14px system-ui}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:14px 20px;background:#fffdfa;border-bottom:1px solid #dbcec1}
+strong{font-size:15px}label{display:flex;align-items:center;gap:6px}select{font:inherit;padding:7px 10px;border:1px solid #d9c8b8;border-radius:9px;background:white;color:inherit}
+.note{font-size:12px;color:#76695e}iframe{display:block;width:390px;max-width:100%;height:calc(100vh - 86px);min-height:650px;margin:10px auto;border:1px solid #dbc7b6;background:white;border-radius:12px}
+</style></head><body><header><strong>Segeda Home · Botones premium</strong>
+<label>Ancho <select id="width"><option>360</option><option selected>390</option><option>412</option><option>430</option><option>1120</option></select></label>
+<label>Página <select id="page"><option value="/catalogo?categoria=placas">Placas circulares</option><option value="/catalogo">Inicio</option><option value="/nubes">Nubes temáticas</option><option value="/navidad">Navidad</option></select></label>
+<span class="note">Vista de revisión · La tienda principal conserva su versión actual.</span></header>
+<iframe id="store" title="Tienda de revisión" src="/catalogo?categoria=placas"></iframe>
+<script>const frame=document.querySelector('#store');document.querySelector('#width').onchange=e=>frame.style.width=e.target.value+'px';document.querySelector('#page').onchange=e=>frame.src=e.target.value;</script>
+</body></html>
